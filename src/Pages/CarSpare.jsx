@@ -166,15 +166,34 @@ const CarSpare = () => {
                           Choose Image
                         </Typography>
                         <Box className="imageContainer" sx={{ display: 'flex', flexWrap: 'wrap' }}>
-                          {selectedImages.map((file, index) => (
-                            <Box className="imgdiv" key={index} sx={{ position: 'relative', marginRight: 2, marginBottom: 2 }}>
-                              <Button variant="contained" color="secondary" onClick={() => removeImage(index)} sx={{ position: 'absolute', top: 0, right: 0 }}>
-                                X
-                              </Button>
-                              <img className="subimage" src={URL.createObjectURL(file)} alt={`Image ${index}`} sx={{ maxWidth: 100, maxHeight: 100, borderRadius: 1 }} />
-                            </Box>
-                          ))}
-                        </Box>
+    {selectedImages.map((file, index) => (
+      <Box className="imgdiv" key={index} sx={{ position: 'relative', marginRight: 2, marginBottom: 2 }}>
+        <Button 
+          variant="contained" 
+          color="secondary" 
+          onClick={() => removeImage(index)} 
+          sx={{ 
+            position: 'absolute', 
+            top: 0, 
+            right: 0, 
+            minWidth: 'unset', 
+            width: '18px', 
+            height: '18px', 
+            padding: 0,
+            fontSize: '10px'
+          }}
+        >
+          X
+        </Button>
+        <img 
+          className="subimage" 
+          src={URL.createObjectURL(file)} 
+          alt={`Image ${index}`} 
+          style={{ width: '60px', height: '60px', objectFit: 'cover', borderRadius: '4px' }} 
+        />
+      </Box>
+    ))}
+  </Box>
                         <Box
                           sx={{
                             paddingTop: 3,
