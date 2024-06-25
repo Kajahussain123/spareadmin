@@ -45,7 +45,7 @@ const AddVehicle = () => {
       <Box sx={{ display: 'flex', minHeight: '100vh' }}>
         <Sidebar />
         <Box component="main" sx={{ flexGrow: 1, p: 3, backgroundColor: '#f4f6f8' }}>
-          <Container>
+          <Container className='mt-5'>
             <Grid container justifyContent="center">
               <Grid item xs={12} sm={10} md={8}>
                 <Paper elevation={3} sx={{ padding: 4, backgroundColor: '#fff' }}>
@@ -118,25 +118,17 @@ const AddVehicle = () => {
                           </RadioGroup>
                         </FormControl>
                       </Grid>
+                    
                       <Grid item xs={12} sm={6}>
                         <TextField
-                          label="Version"
-                          fullWidth
-                          required
-                          value={version}
-                          onChange={(e) => setVersion(e.target.value)}
-                        />
-                      </Grid>
-                      <Grid item xs={12} sm={6}>
-                        <TextField
-                          label="Fuel Type"
+                          label="Version/Fuel Type"
                           fullWidth
                           required
                           value={fuelType}
                           onChange={(e) => setFuelType(e.target.value)}
                         />
                       </Grid>
-                      <Grid item xs={12}>
+                      <Grid item xs={12} sm={6}>
                         <Typography variant="subtitle1" gutterBottom>
                           Choose Image
                         </Typography>
