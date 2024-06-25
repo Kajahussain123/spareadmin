@@ -7,7 +7,7 @@ import {
   ShoppingCart as OrdersIcon,
   People as CustomersIcon,
   BarChart as StatisticsIcon,
-  RateReview as ReviewsIcon,
+
   MonetizationOn as TransactionsIcon,
   Storefront as SellersIcon,
   LocalOffer as HotOffersIcon,
@@ -16,6 +16,7 @@ import {
   ExpandLess as ExpandLessIcon,
   ExpandMore as ExpandMoreIcon
 } from '@mui/icons-material';
+import AddCircleOutlinedIcon from '@mui/icons-material/AddCircleOutlined';
 
 const Sidebar = () => {
   const [selectedItem, setSelectedItem] = useState('Dashboard');
@@ -45,7 +46,7 @@ const Sidebar = () => {
     { icon: <OrdersIcon />, text: 'Orders', path: '/orders' },
     { icon: <CustomersIcon />, text: 'Customers', path: '/customers' },
     { icon: <StatisticsIcon />, text: 'Add Brands', path: '/addbrands' },
-    { icon: <ReviewsIcon />, text: 'Reviews', path: '/reviews' },
+    { icon: <AddCircleOutlinedIcon />, text: 'Add Vehicle', path: '/addvehicle' },
     { icon: <TransactionsIcon />, text: 'Transactions', path: '/transactions' },
     { icon: <SellersIcon />, text: 'Sellers', path: '/sellers' },
     { icon: <HotOffersIcon />, text: 'Hot offers', path: '/hotoffers' },
