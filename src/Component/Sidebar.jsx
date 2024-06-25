@@ -44,7 +44,7 @@ const Sidebar = () => {
     },
     { icon: <OrdersIcon />, text: 'Orders', path: '/orders' },
     { icon: <CustomersIcon />, text: 'Customers', path: '/customers' },
-    { icon: <StatisticsIcon />, text: 'Statistics', path: '/statistics' },
+    { icon: <StatisticsIcon />, text: 'Add Brands', path: '/addbrands' },
     { icon: <ReviewsIcon />, text: 'Reviews', path: '/reviews' },
     { icon: <TransactionsIcon />, text: 'Transactions', path: '/transactions' },
     { icon: <SellersIcon />, text: 'Sellers', path: '/sellers' },

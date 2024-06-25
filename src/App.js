@@ -3,6 +3,7 @@ import './App.css';
 import Dashboard from './Pages/Dashboard';
 import CarSpare from './Pages/CarSpare';
 import BikeSpare from './Pages/BikeSpare';
+import AddBrand from './Pages/AddBrand';
 
 function App() {
   return (
@@ -11,6 +12,8 @@ function App() {
       <Route path='/' Component={Dashboard}/>
       <Route path='/carspare' Component={CarSpare}/>
       <Route path='/bikespare' Component={BikeSpare}/>
+      <Route path='/addbrands' Component={AddBrand}/>
+
 
      </Routes>
     </div>
