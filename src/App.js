@@ -5,6 +5,9 @@ import CarSpare from './Pages/CarSpare';
 import BikeSpare from './Pages/BikeSpare';
 import AddBrand from './Pages/AddBrand';
 import AddVehicle from './Pages/AddVehicle';
+import ViewBrand from './Pages/ViewBrand';
+import AddAccessories from './Pages/AddAccessories';
+import ViewAccessories from './Pages/ViewAccessories';
 
 function App() {
   return (
@@ -13,8 +16,11 @@ function App() {
       <Route path='/' Component={Dashboard}/>
       <Route path='/carspare' Component={CarSpare}/>
       <Route path='/bikespare' Component={BikeSpare}/>
-      <Route path='/addbrands' Component={AddBrand}/>
+      <Route path='/addbrand' Component={AddBrand}/>
       <Route path='/addvehicle' Component={AddVehicle}/>
+      <Route path='/viewbrand' Component={ViewBrand}/>
+      <Route path='/addaccessories' Component={AddAccessories}/>
+      <Route path='/viewaccessories' Component={ViewAccessories}/>
 
 
      </Routes>

@@ -7,7 +7,6 @@ import {
   ShoppingCart as OrdersIcon,
   People as CustomersIcon,
   BarChart as StatisticsIcon,
-
   MonetizationOn as TransactionsIcon,
   Storefront as SellersIcon,
   LocalOffer as HotOffersIcon,
@@ -21,11 +20,23 @@ import AddCircleOutlinedIcon from '@mui/icons-material/AddCircleOutlined';
 const Sidebar = () => {
   const [selectedItem, setSelectedItem] = useState('Dashboard');
   const [openProducts, setOpenProducts] = useState(false);
+  const [openBrand, setOpenBrand] = useState(false);
+  const [openAccessories, setOpenAccessories] = useState(false);
   const navigate = useNavigate();
 
   const handleProductsClick = () => {
     setOpenProducts(!openProducts);
     setSelectedItem('Products'); // Set the parent menu item as selected
+  };
+
+  const handleBrandClick = () => {
+    setOpenBrand(!openBrand);
+    setSelectedItem('Brand'); // Set the parent menu item as selected
+  };
+
+  const handleAccessoriesClick = () => {
+    setOpenAccessories(!openAccessories);
+    setSelectedItem('Accessories'); // Set the parent menu item as selected
   };
 
   const handleNavigation = (path, itemText) => {
@@ -45,7 +56,22 @@ const Sidebar = () => {
     },
     { icon: <OrdersIcon />, text: 'Orders', path: '/orders' },
     { icon: <CustomersIcon />, text: 'Customers', path: '/customers' },
-    { icon: <StatisticsIcon />, text: 'Add Brands', path: '/addbrands' },
+    { 
+      icon: <StatisticsIcon />, 
+      text: 'Brand', 
+      subItems: [
+        { icon: null, text: 'Add Brand', path: '/addbrand' },
+        { icon: null, text: 'View Brand', path: '/viewbrand' }
+      ]
+    },
+    { 
+      icon: <StatisticsIcon />, 
+      text: 'Accessories', 
+      subItems: [
+        { icon: null, text: 'Add Accessories', path: '/addaccessories' },
+        { icon: null, text: 'View Accessories', path: '/viewaccessories' }
+      ]
+    },
     { icon: <AddCircleOutlinedIcon />, text: 'Add Vehicle', path: '/addvehicle' },
     { icon: <TransactionsIcon />, text: 'Transactions', path: '/transactions' },
     { icon: <SellersIcon />, text: 'Sellers', path: '/sellers' },
@@ -63,7 +89,11 @@ const Sidebar = () => {
               <>
                 <ListItem 
                   button 
-                  onClick={handleProductsClick}
+                  onClick={
+                    item.text === 'Products' ? handleProductsClick : 
+                    item.text === 'Brand' ? handleBrandClick : 
+                    handleAccessoriesClick
+                  }
                   sx={{ 
                     '&:hover': { bgcolor: 'rgba(0, 0, 0, 0.04)' },
                     bgcolor: selectedItem === item.text ? 'rgba(0, 0, 0, 0.08)' : 'transparent'
@@ -87,9 +117,9 @@ const Sidebar = () => {
                       </Typography>
                     } 
                   />
-                  {openProducts ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                  {(item.text === 'Products' ? openProducts : item.text === 'Brand' ? openBrand : openAccessories) ? <ExpandLessIcon /> : <ExpandMoreIcon />}
                 </ListItem>
-                <Collapse in={openProducts} timeout="auto" unmountOnExit>
+                <Collapse in={item.text === 'Products' ? openProducts : item.text === 'Brand' ? openBrand : openAccessories} timeout="auto" unmountOnExit>
                   <List component="div" disablePadding>
                     {item.subItems.map((subItem, subIndex) => (
                       <ListItem 
