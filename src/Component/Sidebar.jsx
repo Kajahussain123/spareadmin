@@ -16,12 +16,17 @@ import {
   ExpandMore as ExpandMoreIcon
 } from '@mui/icons-material';
 import AddCircleOutlinedIcon from '@mui/icons-material/AddCircleOutlined';
+import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
+import CarRentalOutlinedIcon from '@mui/icons-material/CarRentalOutlined';
+import CategoryOutlinedIcon from '@mui/icons-material/CategoryOutlined';
 
 const Sidebar = () => {
   const [selectedItem, setSelectedItem] = useState('Dashboard');
   const [openProducts, setOpenProducts] = useState(false);
   const [openBrand, setOpenBrand] = useState(false);
   const [openAccessories, setOpenAccessories] = useState(false);
+  const [openVehicle, setOpenVehicle] = useState(false);
+  const [openViewProducts, setOpenViewProducts] = useState(false);
   const navigate = useNavigate();
 
   const handleProductsClick = () => {
@@ -39,6 +44,16 @@ const Sidebar = () => {
     setSelectedItem('Accessories'); // Set the parent menu item as selected
   };
 
+  const handleVehicleClick = () => {
+    setOpenVehicle(!openVehicle);
+    setSelectedItem('Vehicle'); // Set the parent menu item as selected
+  };
+
+  const handleViewProductsClick = () => {
+    setOpenViewProducts(!openViewProducts);
+    setSelectedItem('View Products'); // Set the parent menu item as selected
+  };
+
   const handleNavigation = (path, itemText) => {
     setSelectedItem(itemText);
     navigate(path);
@@ -54,6 +69,14 @@ const Sidebar = () => {
         { icon: null, text: 'Bike Spare', path: '/bikespare' }
       ]
     },
+    { 
+      icon: <VisibilityOutlinedIcon />, 
+      text: 'View Products', 
+      subItems: [
+        { icon: null, text: 'Car Spare', path: '/viewcarspare' },
+        { icon: null, text: 'Bike Spare', path: '/viewbikespare' }
+      ]
+    },
     { icon: <OrdersIcon />, text: 'Orders', path: '/orders' },
     { icon: <CustomersIcon />, text: 'Customers', path: '/customers' },
     { 
@@ -65,14 +88,22 @@ const Sidebar = () => {
       ]
     },
     { 
-      icon: <StatisticsIcon />, 
+      icon: <CategoryOutlinedIcon />, 
       text: 'Accessories', 
       subItems: [
         { icon: null, text: 'Add Accessories', path: '/addaccessories' },
         { icon: null, text: 'View Accessories', path: '/viewaccessories' }
       ]
     },
-    { icon: <AddCircleOutlinedIcon />, text: 'Add Vehicle', path: '/addvehicle' },
+    { 
+      icon: <CarRentalOutlinedIcon />, 
+      text: 'Vehicle', 
+      subItems: [
+        { icon: null, text: 'Add Vehicle', path: '/addvehicle' },
+        { icon: null, text: 'View Vehicle', path: '/viewvehicle' }
+      ]
+    },
+   
     { icon: <TransactionsIcon />, text: 'Transactions', path: '/transactions' },
     { icon: <SellersIcon />, text: 'Sellers', path: '/sellers' },
     { icon: <HotOffersIcon />, text: 'Hot offers', path: '/hotoffers' },
@@ -92,7 +123,9 @@ const Sidebar = () => {
                   onClick={
                     item.text === 'Products' ? handleProductsClick : 
                     item.text === 'Brand' ? handleBrandClick : 
-                    handleAccessoriesClick
+                    item.text === 'Accessories' ? handleAccessoriesClick : 
+                    item.text === 'Vehicle' ? handleVehicleClick : 
+                    handleViewProductsClick
                   }
                   sx={{ 
                     '&:hover': { bgcolor: 'rgba(0, 0, 0, 0.04)' },
@@ -117,9 +150,9 @@ const Sidebar = () => {
                       </Typography>
                     } 
                   />
-                  {(item.text === 'Products' ? openProducts : item.text === 'Brand' ? openBrand : openAccessories) ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                  {(item.text === 'Products' ? openProducts : item.text === 'Brand' ? openBrand : item.text === 'Accessories' ? openAccessories : item.text === 'Vehicle' ? openVehicle : openViewProducts) ? <ExpandLessIcon /> : <ExpandMoreIcon />}
                 </ListItem>
-                <Collapse in={item.text === 'Products' ? openProducts : item.text === 'Brand' ? openBrand : openAccessories} timeout="auto" unmountOnExit>
+                <Collapse in={item.text === 'Products' ? openProducts : item.text === 'Brand' ? openBrand : item.text === 'Accessories' ? openAccessories : item.text === 'Vehicle' ? openVehicle : openViewProducts} timeout="auto" unmountOnExit>
                   <List component="div" disablePadding>
                     {item.subItems.map((subItem, subIndex) => (
                       <ListItem 
