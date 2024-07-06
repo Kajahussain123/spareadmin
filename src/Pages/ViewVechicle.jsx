@@ -1,38 +1,92 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
-  Paper, Typography, Grid, Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button
+  Paper, Typography, Grid, Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, Dialog, DialogTitle, DialogContent, DialogActions
 } from '@mui/material';
+import { Container } from 'react-bootstrap';
 import Header from '../Component/Header';
 import Sidebar from '../Component/Sidebar';
-import { Container } from 'react-bootstrap';
+import { viewVehicles, updateVehicle, deleteVehicle, getCarBrands, getBikeBrands, viewVehicle } from '../services/allApi'; // Adjust paths as per your project structure
+import EditVehicle from './EditVehicle'; // Assuming EditVehicle component is in the same directory
 
 const ViewVehicle = () => {
-  // Sample data for vehicles
-  const [vehicles, setVehicles] = useState([
-    {
-      id: 1,
-      name: 'Vehicle A',
-      image: 'vehicleA.png',
-      description: 'Description for Vehicle A',
-      year: 2021,
-      brand: 'Brand A',
-      category: 'Category 1',
-      version: 'V1',
-      fuelType: 'Electric'
-    },
-    {
-      id: 2,
-      name: 'Vehicle B',
-      image: 'vehicleB.png',
-      description: 'Description for Vehicle B',
-      year: 2020,
-      brand: 'Brand B',
-      category: 'Category 2',
-      version: 'V2',
-      fuelType: 'Petrol'
-    },
-    // Add more sample data as needed
-  ]);
+  const [vehicles, setVehicles] = useState([]);
+  const [openEditModal, setOpenEditModal] = useState(false);
+  const [selectedVehicle, setSelectedVehicle] = useState(null);
+  const [vehicleCategories, setVehicleCategories] = useState([]);
+  const [brands, setBrands] = useState([]);
+  const [error, setError] = useState('');
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [vehicleToDelete, setVehicleToDelete] = useState(null);
+
+  useEffect(() => {
+    fetchVehicles();
+    fetchVehicleCategories();
+  }, []);
+
+  const fetchVehicles = async () => {
+    try {
+      const data = await viewVehicle();
+      setVehicles(data);
+    } catch (error) {
+      console.error('Error fetching vehicles:', error);
+    }
+  };
+
+  const fetchVehicleCategories = async () => {
+    // Assuming you have a function to fetch vehicle categories
+    // Example implementation
+    try {
+      // Fetch vehicle categories from backend or use a static list
+      const categories = [
+        { id: 1, name: 'Car' },
+        { id: 2, name: 'Bike' }
+        // Add more categories if needed
+      ];
+      setVehicleCategories(categories);
+    } catch (error) {
+      console.error('Error fetching vehicle categories:', error);
+    }
+  };
+
+  const handleEditClick = (vehicle) => {
+    setSelectedVehicle(vehicle);
+    setOpenEditModal(true);
+  };
+
+  const handleCloseEditModal = () => {
+    setOpenEditModal(false);
+    setSelectedVehicle(null);
+  };
+
+  const handleUpdateVehicle = (updatedVehicle) => {
+    setVehicles(prevVehicles =>
+      prevVehicles.map(vehicle =>
+        vehicle.id === updatedVehicle.id ? updatedVehicle : vehicle
+      )
+    );
+    handleCloseEditModal();
+  };
+
+  const handleOpenDeleteDialog = (vehicleId) => {
+    setVehicleToDelete(vehicleId);
+    setOpenDeleteDialog(true);
+  };
+
+  const handleCloseDeleteDialog = () => {
+    setOpenDeleteDialog(false);
+    setVehicleToDelete(null);
+  };
+
+  const handleDeleteVehicle = async () => {
+    try {
+      await deleteVehicle(vehicleToDelete);
+      fetchVehicles(); // Refresh the list of vehicles after delete
+      setOpenDeleteDialog(false); // Close the dialog after deletion
+    } catch (error) {
+      console.error('Error deleting vehicle:', error);
+      setError('An error occurred while deleting the vehicle. Please try again.');
+    }
+  };
 
   return (
     <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
@@ -53,12 +107,10 @@ const ViewVehicle = () => {
                         <TableRow>
                           <TableCell align="center">Name</TableCell>
                           <TableCell align="center">Image</TableCell>
-                          <TableCell align="center">Description</TableCell>
                           <TableCell align="center">Year</TableCell>
                           <TableCell align="center">Brand</TableCell>
                           <TableCell align="center">Category</TableCell>
-                          <TableCell align="center">Version</TableCell>
-                          <TableCell align="center">Fuel Type</TableCell>
+                          <TableCell align="center">Version Fuel Type</TableCell>
                           <TableCell align="center">Actions</TableCell>
                         </TableRow>
                       </TableHead>
@@ -67,17 +119,15 @@ const ViewVehicle = () => {
                           <TableRow key={vehicle.id}>
                             <TableCell align="center">{vehicle.name}</TableCell>
                             <TableCell align="center">
-                              <img src={URL.createObjectURL(new Blob([vehicle.image]))} alt={vehicle.name} style={{ height: 50 }} />
+                              <img src={vehicle.image} alt={vehicle.name} style={{ height: 50 }} />
                             </TableCell>
-                            <TableCell align="center">{vehicle.description}</TableCell>
-                            <TableCell align="center">{vehicle.year}</TableCell>
-                            <TableCell align="center">{vehicle.brand}</TableCell>
-                            <TableCell align="center">{vehicle.category}</TableCell>
-                            <TableCell align="center">{vehicle.version}</TableCell>
-                            <TableCell align="center">{vehicle.fuelType}</TableCell>
+                            <TableCell align="center">{vehicle.model_year}</TableCell>
+                            <TableCell align="center">{vehicle.brand.name}</TableCell>
+                            <TableCell align="center">{vehicle.vehicle_category.name}</TableCell>
+                            <TableCell align="center">{vehicle.version_fuel_type}</TableCell>
                             <TableCell align="center">
-                              <Button variant="contained" color="primary" sx={{ mr: 1 }}>Edit</Button>
-                              <Button variant="outlined" color="secondary">Delete</Button>
+                              <Button variant="contained" color="primary" sx={{ mr: 1 }} onClick={() => handleEditClick(vehicle)}>Edit</Button>
+                              <Button variant="outlined" color="secondary" onClick={() => handleOpenDeleteDialog(vehicle.id)}>Delete</Button>
                             </TableCell>
                           </TableRow>
                         ))}
@@ -90,6 +140,41 @@ const ViewVehicle = () => {
           </Container>
         </Box>
       </Box>
+
+      {/* Edit Vehicle Modal */}
+      <Dialog open={openEditModal} onClose={handleCloseEditModal} maxWidth="md" fullWidth>
+        <EditVehicle
+          open={openEditModal}
+          handleClose={handleCloseEditModal}
+          vehicle={selectedVehicle}
+          vehicleCategories={vehicleCategories}
+          brands={brands}
+          onVehicleUpdated={handleUpdateVehicle}
+        />
+      </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog
+        open={openDeleteDialog}
+        onClose={handleCloseDeleteDialog}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">{"Delete Vehicle"}</DialogTitle>
+        <DialogContent>
+          <Typography variant="body1">
+            Are you sure you want to delete this vehicle?
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDeleteDialog} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleDeleteVehicle} color="secondary" autoFocus>
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

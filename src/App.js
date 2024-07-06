@@ -11,6 +11,7 @@ import ViewAccessories from './Pages/ViewAccessories';
 import ViewCarSpare from './Pages/ViewCarSpare';
 import ViewBikeSpare from './Pages/ViewBikeSpare';
 import ViewVechicle from './Pages/ViewVechicle';
+import Customers from './Pages/Customers';
 
 function App() {
   return (
@@ -27,6 +28,8 @@ function App() {
       <Route path='/viewcarspare' Component={ViewCarSpare}/>
       <Route path='/viewbikespare' Component={ViewBikeSpare}/>
       <Route path='/viewvehicle' Component={ViewVechicle}/>
+      <Route path='/customers' Component={Customers}/>
+
 
 
      </Routes>

@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
-  Paper, Typography, Grid, TextField, Button, MenuItem, Box
+  Paper, Typography, Grid, TextField, Button, MenuItem, Box, Snackbar
 } from '@mui/material';
 import Header from '../Component/Header';
 import Sidebar from '../Component/Sidebar';
 import { Container } from 'react-bootstrap';
+import MuiAlert from '@mui/material/Alert';
+import { addAccessory } from '../services/allApi';
 
 const AddAccessories = () => {
   const [accessoryType, setAccessoryType] = useState('');
@@ -12,9 +14,18 @@ const AddAccessories = () => {
   const [price, setPrice] = useState('');
   const [description, setDescription] = useState('');
   const [offerPrice, setOfferPrice] = useState('');
+  const [discount, setDiscount] = useState('');
   const [selectedImages, setSelectedImages] = useState([]);
+  const [toastOpen, setToastOpen] = useState(false);
 
-  const accessoryTypes = ['Type 1', 'Type 2', 'Type 3'];
+  const accessoryTypes = ['Car', 'Bike'];
+
+  useEffect(() => {
+    if (price && offerPrice) {
+      const calculatedDiscount = ((price - offerPrice) / price) * 100;
+      setDiscount(calculatedDiscount.toFixed(2));
+    }
+  }, [price, offerPrice]);
 
   const handleFileSelect = (event) => {
     const files = event.target.files;
@@ -28,17 +39,40 @@ const AddAccessories = () => {
     setSelectedImages(newImages);
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    // handle form submission
-    console.log({
-      accessoryType,
-      name,
-      price,
-      description,
-      offerPrice,
-      selectedImages
+    const formData = new FormData();
+    formData.append('accessory_type', accessoryType);
+    formData.append('accessory_name', name);
+    formData.append('price', price);
+    formData.append('description', description);
+    formData.append('offer_price', offerPrice);
+    formData.append('discount_percentage', discount);
+    selectedImages.forEach((image, index) => {
+      formData.append(`accessory_image_files[${index}]`, image);
     });
+
+    try {
+      await addAccessory(formData);
+      setToastOpen(true);
+      // Clear the form fields
+      setAccessoryType('');
+      setName('');
+      setPrice('');
+      setDescription('');
+      setOfferPrice('');
+      setDiscount('');
+      setSelectedImages([]);
+    } catch (error) {
+      console.error('Error adding accessory:', error);
+    }
+  };
+
+  const handleToastClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setToastOpen(false);
   };
 
   return (
@@ -91,15 +125,26 @@ const AddAccessories = () => {
                           onChange={(e) => setPrice(e.target.value)}
                         />
                       </Grid>
-                      <Grid item xs={12} sm={6}>
-                        <TextField
-                          label="Offer Price"
-                          type="number"
-                          fullWidth
-                          required
-                          value={offerPrice}
-                          onChange={(e) => setOfferPrice(e.target.value)}
-                        />
+                      <Grid item xs={12} sm={6} container spacing={2}>
+                        <Grid item xs={6}>
+                          <TextField
+                            label="Offer Price"
+                            type="number"
+                            fullWidth
+                            required
+                            value={offerPrice}
+                            onChange={(e) => setOfferPrice(e.target.value)}
+                          />
+                        </Grid>
+                        <Grid item xs={6}>
+                          <TextField
+                            label="Discount %"
+                            type="text"
+                            fullWidth
+                            disabled
+                            value={discount}
+                          />
+                        </Grid>
                       </Grid>
                       <Grid item xs={12}>
                         <TextField
@@ -193,6 +238,11 @@ const AddAccessories = () => {
           </Container>
         </Box>
       </Box>
+      <Snackbar open={toastOpen} autoHideDuration={6000} onClose={handleToastClose}>
+        <MuiAlert onClose={handleToastClose} severity="success" sx={{ width: '100%' }}>
+          Accessory added successfully!
+        </MuiAlert>
+      </Snackbar>
     </Box>
   );
 };

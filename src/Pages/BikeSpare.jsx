@@ -60,7 +60,7 @@ const BikeSpare = () => {
               <Grid item xs={12} sm={10} md={8}>
                 <Paper elevation={3} sx={{ padding: 4, backgroundColor: '#fff' }}>
                   <Typography variant="h4" component="h1" gutterBottom align="center" sx={{ fontWeight: 'bold', color: '#3f51b5' }}>
-                    Add Product
+                    Add Bike Spare
                   </Typography>
                   <form onSubmit={handleSubmit}>
                     <Grid container spacing={3}>
@@ -134,6 +134,26 @@ const BikeSpare = () => {
                       <Grid item xs={12} sm={6}>
                         <TextField
                           label="Price"
+                          type="number"
+                          fullWidth
+                          required
+                          value={price}
+                          onChange={(e) => setPrice(e.target.value)}
+                        />
+                      </Grid>
+                      <Grid item xs={12} sm={6}>
+                        <TextField
+                          label="Offer Price"
+                          type="number"
+                          fullWidth
+                          required
+                          value={price}
+                          onChange={(e) => setPrice(e.target.value)}
+                        />
+                      </Grid>
+                      <Grid item xs={12} sm={6}>
+                        <TextField
+                          label="Discount %"
                           type="number"
                           fullWidth
                           required

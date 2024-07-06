@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import {
   Paper, Typography, Grid, TextField, Button, MenuItem, Box
 } from '@mui/material';
 import Header from '../Component/Header';
 import Sidebar from '../Component/Sidebar';
 import { Container } from 'react-bootstrap';
+import { getCarBrands, getCarCategories, getCarVehicles, viewVehicle } from '../services/allApi';
 
 const CarSpare = () => {
   const [productName, setProductName] = useState('');
@@ -16,10 +18,41 @@ const CarSpare = () => {
   const [description, setDescription] = useState('');
   const [highlight, setHighlight] = useState('');
   const [selectedImages, setSelectedImages] = useState([]);
+  const [carBrands, setCarBrands] = useState([]);
+  const [carCategories, setCarCategories] = useState([]);
+  const [vehicles, setVehicles] = useState([]);
 
-  const categories = ['Category 1', 'Category 2', 'Category 3'];
-  const brands = ['Brand 1', 'Brand 2', 'Brand 3'];
-  const vehicles = ['Vehicle 1', 'Vehicle 2', 'Vehicle 3'];
+  useEffect(() => {
+    const fetchCarBrands = async () => {
+      try {
+        const data = await getCarBrands();
+        setCarBrands(data);
+      } catch (error) {
+        console.error('Error fetching car brands:', error);
+      }
+    };
+
+    const fetchCarCategories = async () => {
+      try {
+        const data = await getCarCategories();
+        setCarCategories(data);
+      } catch (error) {
+        console.error('Error fetching car categories:', error);
+      }
+    };
+
+    fetchCarBrands();
+    fetchCarCategories();
+  }, []);
+
+  const handleBrandSelect = async (brandId) => {
+    try {
+      const data = await getCarVehicles(brandId);  // Call viewVehicle API with brandId parameter
+      setVehicles(data);
+    } catch (error) {
+      console.error('Error fetching vehicles:', error);
+    }
+  };
 
   const handleFileSelect = (event) => {
     const files = event.target.files;
@@ -49,6 +82,9 @@ const CarSpare = () => {
     });
   };
 
+  const electricBrands = carBrands.filter((brand) => brand.is_electric);
+  const normalBrands = carBrands.filter((brand) => !brand.is_electric);
+
   return (
     <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
       <Header />
@@ -60,7 +96,7 @@ const CarSpare = () => {
               <Grid item xs={12} sm={10} md={8}>
                 <Paper elevation={3} sx={{ padding: 4, backgroundColor: '#fff' }}>
                   <Typography variant="h4" component="h1" gutterBottom align="center" sx={{ fontWeight: 'bold', color: '#3f51b5' }}>
-                    Add Product
+                    Add Car Spare
                   </Typography>
                   <form onSubmit={handleSubmit}>
                     <Grid container spacing={3}>
@@ -82,9 +118,9 @@ const CarSpare = () => {
                           value={category}
                           onChange={(e) => setCategory(e.target.value)}
                         >
-                          {categories.map((option) => (
-                            <MenuItem key={option} value={option}>
-                              {option}
+                          {carCategories.map((option) => (
+                            <MenuItem key={option.id} value={option.name}>
+                              {option.name}
                             </MenuItem>
                           ))}
                         </TextField>
@@ -96,11 +132,23 @@ const CarSpare = () => {
                           fullWidth
                           required
                           value={brand}
-                          onChange={(e) => setBrand(e.target.value)}
+                          onChange={(e) => {
+                            setBrand(e.target.value);
+                            // Fetch vehicles for the selected brand
+                            handleBrandSelect(e.target.value);
+                          }}
                         >
-                          {brands.map((option) => (
-                            <MenuItem key={option} value={option}>
-                              {option}
+                          <MenuItem disabled>Select Brand</MenuItem>
+                          <MenuItem disabled>Normal Brands</MenuItem>
+                          {normalBrands.map((option) => (
+                            <MenuItem key={option.id} value={option.id}>
+                              {option.name}
+                            </MenuItem>
+                          ))}
+                          <MenuItem disabled>Electric Brands</MenuItem>
+                          {electricBrands.map((option) => (
+                            <MenuItem key={option.id} value={option.id}>
+                              {option.name}
                             </MenuItem>
                           ))}
                         </TextField>
@@ -115,8 +163,8 @@ const CarSpare = () => {
                           onChange={(e) => setVehicle(e.target.value)}
                         >
                           {vehicles.map((option) => (
-                            <MenuItem key={option} value={option}>
-                              {option}
+                            <MenuItem key={option.id} value={option.name}>
+                              {option.name}
                             </MenuItem>
                           ))}
                         </TextField>
@@ -166,34 +214,34 @@ const CarSpare = () => {
                           Choose Image
                         </Typography>
                         <Box className="imageContainer" sx={{ display: 'flex', flexWrap: 'wrap' }}>
-    {selectedImages.map((file, index) => (
-      <Box className="imgdiv" key={index} sx={{ position: 'relative', marginRight: 2, marginBottom: 2 }}>
-        <Button 
-          variant="contained" 
-          color="secondary" 
-          onClick={() => removeImage(index)} 
-          sx={{ 
-            position: 'absolute', 
-            top: 0, 
-            right: 0, 
-            minWidth: 'unset', 
-            width: '18px', 
-            height: '18px', 
-            padding: 0,
-            fontSize: '10px'
-          }}
-        >
-          X
-        </Button>
-        <img 
-          className="subimage" 
-          src={URL.createObjectURL(file)} 
-          alt={`Image ${index}`} 
-          style={{ width: '60px', height: '60px', objectFit: 'cover', borderRadius: '4px' }} 
-        />
-      </Box>
-    ))}
-  </Box>
+                          {selectedImages.map((file, index) => (
+                            <Box className="imgdiv" key={index} sx={{ position: 'relative', marginRight: 2, marginBottom: 2 }}>
+                              <Button
+                                variant="contained"
+                                color="secondary"
+                                onClick={() => removeImage(index)}
+                                sx={{
+                                  position: 'absolute',
+                                  top: 0,
+                                  right: 0,
+                                  minWidth: 'unset',
+                                  width: '18px',
+                                  height: '18px',
+                                  padding: 0,
+                                  fontSize: '10px'
+                                }}
+                              >
+                                X
+                              </Button>
+                              <img
+                                className="subimage"
+                                src={URL.createObjectURL(file)}
+                                alt={`Image ${index}`}
+                                style={{ width: '60px', height: '60px', objectFit: 'cover', borderRadius: '4px' }}
+                              />
+                            </Box>
+                          ))}
+                        </Box>
                         <Box
                           sx={{
                             paddingTop: 3,
@@ -214,24 +262,9 @@ const CarSpare = () => {
                           <input onChange={handleFileSelect} type="file" id="fileInput" multiple style={{ display: 'none' }} />
                         </Box>
                       </Grid>
-                      <Grid item xs={12} sm={6}>
-                        <Button
-                          variant="outlined"
-                          fullWidth
-                          sx={{ mt: 2 }}
-                          onClick={() => console.log('Cancelled')}
-                        >
-                          Cancel
-                        </Button>
-                      </Grid>
-                      <Grid item xs={12} sm={6}>
-                        <Button
-                          type="submit"
-                          variant="contained"
-                          fullWidth
-                          sx={{ mt: 2, backgroundColor: "#3f51b5" }}
-                        >
-                          Add
+                      <Grid item xs={12} align="center">
+                        <Button type="submit" variant="contained" sx={{ backgroundColor: '#3f51b5', color: '#fff' }}>
+                          Submit
                         </Button>
                       </Grid>
                     </Grid>

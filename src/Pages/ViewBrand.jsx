@@ -1,38 +1,83 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
-  Paper, Typography, Grid, Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button
+  Paper, Typography, Grid, Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, Dialog, DialogActions, DialogContent, DialogTitle
 } from '@mui/material';
 import Header from '../Component/Header';
 import Sidebar from '../Component/Sidebar';
 import { Container } from 'react-bootstrap';
+import { viewBrand, deleteBrand } from '../services/allApi'; // Import deleteBrand function
+import EditBrand from './EditBrand';
 
 const ViewBrand = () => {
-  // Sample data for brands
-  const [brands, setBrands] = useState([
-    {
-      id: 1,
-      name: 'Brand A Model',
-      image: 'logoA.png',
-      description: 'Description for Brand A Model',
-      year: 2021,
-      brandName: 'Brand A',
-      category: 'Category 1',
-      version: 'V1',
-      fuelType: 'Electric'
-    },
-    {
-      id: 2,
-      name: 'Brand B Model',
-      image: 'logoB.png',
-      description: 'Description for Brand B Model',
-      year: 2020,
-      brandName: 'Brand B',
-      category: 'Category 2',
-      version: 'V2',
-      fuelType: 'Petrol'
-    },
-    // Add more sample data as needed
-  ]);
+  const [brands, setBrands] = useState([]);
+  const [selectedBrand, setSelectedBrand] = useState(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
+  useEffect(() => {
+    const fetchBrands = async () => {
+      try {
+        const data = await viewBrand();
+        setBrands(data);
+      } catch (error) {
+        console.error('Error fetching brands:', error);
+      }
+    };
+
+    fetchBrands();
+  }, []);
+
+  const handleEditClick = (brand) => {
+    setSelectedBrand(brand);
+    setIsEditModalOpen(true);
+  };
+
+  const handleEditModalClose = () => {
+    setIsEditModalOpen(false);
+    setSelectedBrand(null);
+  };
+
+  const handleBrandUpdated = (updatedBrand) => {
+    setBrands((prevBrands) =>
+      prevBrands.map((brand) => (brand.id === updatedBrand.id ? updatedBrand : brand))
+    );
+  };
+
+  const handleDeleteClick = (brand) => {
+    setSelectedBrand(brand);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleDeleteModalClose = () => {
+    setIsDeleteModalOpen(false);
+    setSelectedBrand(null);
+  };
+
+  const handleBrandDeleted = (deletedBrandId) => {
+    setBrands((prevBrands) =>
+      prevBrands.filter((brand) => brand.id !== deletedBrandId)
+    );
+    setIsDeleteModalOpen(false);
+    setSelectedBrand(null);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!selectedBrand) return;
+
+    try {
+      await deleteBrand(selectedBrand.id);
+      handleBrandDeleted(selectedBrand.id);
+      console.log('Brand deleted successfully');
+    } catch (error) {
+      console.error('Error deleting brand:', error);
+      // Handle error if needed
+    }
+  };
+
+  const vehicleCategories = [
+    { label: 'Car', value: 1 },
+    { label: 'Bike', value: 2 }
+  ];
 
   return (
     <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
@@ -53,12 +98,8 @@ const ViewBrand = () => {
                         <TableRow>
                           <TableCell align="center">Name</TableCell>
                           <TableCell align="center">Image</TableCell>
-                          <TableCell align="center">Description</TableCell>
-                          <TableCell align="center">Year</TableCell>
-                          <TableCell align="center">Brand</TableCell>
-                          <TableCell align="center">Category</TableCell>
-                          <TableCell align="center">Version</TableCell>
-                          <TableCell align="center">Fuel Type</TableCell>
+                          <TableCell align="center">Vehicle Category</TableCell>
+                          <TableCell align="center">Electric</TableCell>
                           <TableCell align="center">Actions</TableCell>
                         </TableRow>
                       </TableHead>
@@ -67,17 +108,13 @@ const ViewBrand = () => {
                           <TableRow key={brand.id}>
                             <TableCell align="center">{brand.name}</TableCell>
                             <TableCell align="center">
-                              <img src={URL.createObjectURL(new Blob([brand.image]))} alt={brand.name} style={{ height: 50 }} />
+                              <img src={brand.image} style={{ height: 50 }} alt={brand.name} />
                             </TableCell>
-                            <TableCell align="center">{brand.description}</TableCell>
-                            <TableCell align="center">{brand.year}</TableCell>
-                            <TableCell align="center">{brand.brandName}</TableCell>
-                            <TableCell align="center">{brand.category}</TableCell>
-                            <TableCell align="center">{brand.version}</TableCell>
-                            <TableCell align="center">{brand.fuelType}</TableCell>
+                            <TableCell align="center">{brand.main_category.name}</TableCell>
+                            <TableCell align="center">{brand.is_electric ? 'Yes' : 'No'}</TableCell>
                             <TableCell align="center">
-                              <Button variant="contained" color="primary" sx={{ mr: 1 }}>Edit</Button>
-                              <Button variant="outlined" color="secondary">Delete</Button>
+                              <Button variant="contained" color="primary" sx={{ mr: 1 }} onClick={() => handleEditClick(brand)}>Edit</Button>
+                              <Button variant="outlined" color="secondary" onClick={() => handleDeleteClick(brand)}>Delete</Button>
                             </TableCell>
                           </TableRow>
                         ))}
@@ -90,6 +127,25 @@ const ViewBrand = () => {
           </Container>
         </Box>
       </Box>
+      <EditBrand
+        open={isEditModalOpen}
+        handleClose={handleEditModalClose}
+        brand={selectedBrand}
+        vehicleCategories={vehicleCategories}
+        onBrandUpdated={handleBrandUpdated}
+      />
+      <Dialog open={isDeleteModalOpen} onClose={handleDeleteModalClose}>
+        <DialogTitle>Delete Brand</DialogTitle>
+        <DialogContent>
+          <Typography variant="body1">
+            Are you sure you want to delete {selectedBrand && selectedBrand.name}?
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDeleteModalClose} color="primary">Cancel</Button>
+          <Button onClick={handleConfirmDelete} color="secondary">Delete</Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };
