@@ -182,3 +182,39 @@ export const getCarVehicles = async (brandId) => {
     throw error;
   }
 };
+
+
+export const fetchAds = async () => {
+  try {
+    const response = await axios.get(`${BASE_URL}/api/CarouselImage/`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching ads:', error);
+    throw error;
+  }
+};
+
+export const addAd = async (image) => {
+  const formData = new FormData();
+  formData.append('image', image);
+  
+  try {
+    await axios.post(`${BASE_URL}/api/CarouselImage/`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+  } catch (error) {
+    console.error('Error adding ad:', error);
+    throw error;
+  }
+};
+
+export const deleteAd = async (adId) => {
+  try {
+    await axios.delete(`${BASE_URL}/api/CarouselImage/${adId}/`);
+  } catch (error) {
+    console.error('Error deleting ad:', error);
+    throw error;
+  }
+};

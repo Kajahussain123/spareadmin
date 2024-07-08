@@ -104,7 +104,7 @@ const Sidebar = () => {
       ]
     },
    
-    { icon: <TransactionsIcon />, text: 'Transactions', path: '/transactions' },
+    { icon: <TransactionsIcon />, text: 'Ads Update', path: '/ads' },
     { icon: <SellersIcon />, text: 'Sellers', path: '/sellers' },
     { icon: <HotOffersIcon />, text: 'Hot offers', path: '/hotoffers' },
     { icon: <AppearanceIcon />, text: 'Appearance', path: '/appearance' },

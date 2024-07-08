@@ -12,6 +12,7 @@ import ViewCarSpare from './Pages/ViewCarSpare';
 import ViewBikeSpare from './Pages/ViewBikeSpare';
 import ViewVechicle from './Pages/ViewVechicle';
 import Customers from './Pages/Customers';
+import Ads from './Pages/Ads';
 
 function App() {
   return (
@@ -29,6 +30,8 @@ function App() {
       <Route path='/viewbikespare' Component={ViewBikeSpare}/>
       <Route path='/viewvehicle' Component={ViewVechicle}/>
       <Route path='/customers' Component={Customers}/>
+      <Route path='/ads' Component={Ads}/>
+
 
 
 
